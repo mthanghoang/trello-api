@@ -9,7 +9,7 @@ const port = 8017
 app.get('/', (req, res) => {
   // Test Absolute import mapOrder
   console.log(mapOrder(
-    [ { id: 'id-1', name: 'One' },
+    [{ id: 'id-1', name: 'One' },
       { id: 'id-2', name: 'Two' },
       { id: 'id-3', name: 'Three' },
       { id: 'id-4', name: 'Four' },
@@ -22,5 +22,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, hostname, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server running at ${ hostname }:${ port }/`)
+  console.log(`Server running at http://${ hostname }:${ port }/`)
 })
