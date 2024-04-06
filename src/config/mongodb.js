@@ -1,15 +1,14 @@
-// thanghoang
-// oE0SCVIS4lV22PQa
+import { env } from './environment'
 
-const MONGODB_URI = 'mongodb+srv://thanghoang:oE0SCVIS4lV22PQa@cluster0-thanghoang.lvhvqak.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0-ThangHoang'
+// const MONGODB_URI = 'mongodb+srv://thanghoang:oE0SCVIS4lV22PQa@cluster0-thanghoang.lvhvqak.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0-ThangHoang'
 
-const DB_NAME = 'trello-mern-stack'
+// const DB_NAME = 'trello-mern-stack'
 
 import { MongoClient, ServerApiVersion } from 'mongodb'
 
 let trelloDBInstance = null
 
-const mongoClientInstance = new MongoClient(MONGODB_URI, {
+const mongoClientInstance = new MongoClient(env.MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -20,7 +19,7 @@ const mongoClientInstance = new MongoClient(MONGODB_URI, {
 export const CONNECT_DB = async () => {
   await mongoClientInstance.connect()
 
-  trelloDBInstance = mongoClientInstance.db(DB_NAME)
+  trelloDBInstance = mongoClientInstance.db(env.DB_NAME)
 }
 
 export const GET_DB = () => {

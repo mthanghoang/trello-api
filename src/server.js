@@ -2,24 +2,25 @@
 import express from 'express'
 import { CONNECT_DB, GET_DB } from './config/mongodb'
 import { CLOSE_DB } from './config/mongodb'
+import { env } from './config/environment'
 
 const exitHook = require('async-exit-hook')
 const START_SERVER = () => {
   const app = express()
 
-  const hostname = 'localhost'
-  const port = 8017
+  // const hostname = 'localhost'
+  // const port = 8017
 
   app.get('/', async (req, res) => {
     console.log(await GET_DB().listCollections().toArray())
     res.end('<h1>Hello World!</h1><hr>')
   })
 
-  app.listen(port, hostname, () => {
-    console.log(`Server running at http://${ hostname }:${ port }/`)
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    console.log(`Hi ${env.AUTHOR}, server running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
   })
 
-  exitHook(() => {
+  exitHook(() => { // windows ko duoc, mac duoc (windows ko bat duoc kieu thoat Ctrl+C)
     // console.log(`Exiting with signal: ${signal}`)
     console.log('Disconnecting from MongoDB Cloud Atlas')
     CLOSE_DB()
