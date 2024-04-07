@@ -4,6 +4,7 @@ import { CONNECT_DB } from './config/mongodb'
 import { CLOSE_DB } from './config/mongodb'
 import { env } from './config/environment'
 import { APIs_V1 } from '~/routes/v1'
+import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 
 const exitHook = require('async-exit-hook')
 const START_SERVER = () => {
@@ -14,6 +15,9 @@ const START_SERVER = () => {
 
   // Use APIs v1
   app.use('/v1', APIs_V1)
+
+  // Middleware error handling
+  app.use(errorHandlingMiddleware)
 
   app.listen(env.APP_PORT, env.APP_HOST, () => {
     console.log(`Hi ${env.AUTHOR}, server running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
