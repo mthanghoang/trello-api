@@ -18,8 +18,7 @@ const mongoClientInstance = new MongoClient(env.MONGODB_URI, {
 
 export const CONNECT_DB = async () => {
   await mongoClientInstance.connect()
-
-  trelloDBInstance = mongoClientInstance.db(env.DB_NAME)
+  trelloDBInstance = mongoClientInstance.db(env.DATABASE_NAME)
 }
 
 export const GET_DB = () => {

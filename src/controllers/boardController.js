@@ -9,10 +9,10 @@ const createNew = async(req, res, next) => {
     // throw new ApiError(502)
 
     // Navigate to service layer
-    const createdBoard = await boardService.createNew(req.body)
+    const result = await boardService.createNew(req.body)
 
     // có kết quả thì trả về phái client
-    res.status(StatusCodes.CREATED).json(createdBoard)
+    res.status(StatusCodes.CREATED).json(result)
   } catch (error) {
     next(error)
     // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
