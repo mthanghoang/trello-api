@@ -1,5 +1,5 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
+// Domain duoc phep truy cap vao tai nguyen server
+export const WHITELIST_DOMAINS = [
+  'http://localhost:5173'
+  // ...vv
+]
