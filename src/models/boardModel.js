@@ -1,6 +1,9 @@
 import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
+import { BOARD_TYPES } from '~/utils/constants'
+import { columnModel } from './columnModel'
+import { cardModel } from './cardModel'
 
 // Define Collection (Name & Schema)
 const BOARD_COLLECTION_NAME = 'boards'
@@ -8,6 +11,7 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required().min(3).max(50).trim().strict(),
   slug: Joi.string().required().min(3).trim().strict(),
   description: Joi.string().required().min(3).max(256).trim().strict(),
+  type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required(),
 
   columnOrderIds: Joi.array().items(
     Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('ColumnId fails to match the Object Id pattern!')
@@ -46,10 +50,33 @@ const createNew = async (data) => {
 // that only returns board specific data)
 const getDetails = async (boardId) => {
   try {
-    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({
-      _id: new ObjectId(boardId)
-    })
-    return result
+    // Docs: https://www.mongodb.com/docs/manual/reference/method/db.collection.aggregate/
+    // Docs: https://www.mongodb.com/docs/v7.0/reference/operator/aggregation/lookup/
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
+      { $match: {
+        _id: new ObjectId(boardId),
+        _destroyed: false
+      } },
+      { $lookup: {
+        from: columnModel.COLUMN_COLLECTION_NAME, // Specifies the collection in the same database to perform the join with.
+        localField: '_id',
+        foreignField: 'boardId',
+        /**
+         * Specifies the name of the new array field to add to the input documents.
+         * The new array field contains the matching documents from the from collection.
+         * If the specified name already exists in the input document, the existing field is overwritten.
+         */
+        as: 'columns'
+      } },
+      { $lookup: {
+        from: cardModel.CARD_COLLECTION_NAME, // Specifies the collection in the same database to perform the join with.
+        localField: '_id',
+        foreignField: 'boardId',
+        as: 'cards'
+      } }
+    ]).toArray()
+    // console.log(result)
+    return result[0] || {}
   } catch (error) {
     throw new Error(error)
   }

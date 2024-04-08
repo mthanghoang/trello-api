@@ -3,6 +3,7 @@ import { slugify } from '~/utils/formatters'
 import { boardModel } from '~/models/boardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
+import { cloneDeep } from 'lodash'
 
 const createNew = async (reqBody) => {
   try {
@@ -27,7 +28,16 @@ const getDetails = async (boardId) => {
     if (!board) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
     }
-    return board
+
+    const result = cloneDeep(board)
+    // đưa card về đúng column
+    result.columns.forEach(column => {
+      // column.cards = result.cards.filter(card => card.columnId.toString() === column._id.toString())
+      // MongoDB provides method equals() for comparing objectid
+      column.cards = result.cards.filter(card => card.columnId.equals(column._id))
+    })
+    delete result.cards
+    return result
   } catch (error) { throw error }
 }
 
