@@ -36,14 +36,11 @@ const findOneById = async (id) => {
 // update array cardOrderIds for column (append)
 const pushCardOrderIds = async (card) => {
   try {
-    const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
+    return await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(card.columnId), _destroyed: false },
       { $push: { cardOrderIds: new ObjectId(card._id) } },
       { returnDocument: 'after' }
     )
-    console.log('result:', result)
-    // console.log('result.value:', result.value)
-    // return result.value
   } catch (error) {
     throw new Error(error)
   }
