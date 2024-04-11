@@ -45,7 +45,35 @@ const update = async (req, res, next) => {
   }
 }
 
+const moveCardToDifferentColumn = async (req, res, next) => {
+  const correctCondition = Joi.object({
+    activeCardId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('Active CardId fails to match the Object Id pattern!'),
+
+    activeColumnId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('Active ColumnId fails to match the Object Id pattern!'),
+
+    activeCardOrderIds: Joi.array().required().items(
+      Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('Active CardId fails to match the Object Id pattern!')
+    ),
+
+    overColumnId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('Active ColumnId fails to match the Object Id pattern!'),
+
+    overCardOrderIds: Joi.array().required().items(
+      Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('Active CardId fails to match the Object Id pattern!')
+    )
+  })
+
+  try {
+    await correctCondition.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY,
+      new Error(error).message
+    ))
+  }
+}
+
 export const boardValidation = {
   createNew,
-  update
+  update,
+  moveCardToDifferentColumn
 }

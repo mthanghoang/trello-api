@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
+import { isEmpty } from 'lodash'
 
 // Define Collection (name & schema)
 const COLUMN_COLLECTION_NAME = 'columns'
@@ -69,6 +70,10 @@ const update = async (columnId, dataToUpdate) => {
         delete dataToUpdate[fieldName]
       }
     })
+    // Convert id strings to ObjectId
+    if (dataToUpdate.cardOrderIds) {
+      dataToUpdate.cardOrderIds = dataToUpdate.cardOrderIds.map(id => new ObjectId(id))
+    }
     return await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(columnId), _destroyed: false },
       { $set: dataToUpdate },
