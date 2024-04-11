@@ -1,4 +1,5 @@
 /* eslint-disable no-useless-catch */
+import { boardModel } from '~/models/boardModel'
 import { cardModel } from '~/models/cardModel'
 import { columnModel } from '~/models/columnModel'
 
@@ -17,7 +18,9 @@ const createNew = async (reqBody) => {
 
     //xử lí dữ liệu cho chuẩn với FE
     if (result) {
-      await columnModel.pushCardOrderIds(result)
+      columnModel.pushCardOrderIds(result)
+      columnModel.update(result.columnId, { updatedAt: Date.now() })
+      boardModel.update(result.boardId, { updatedAt: Date.now() })
     }
     return result
   } catch (error) { throw error }

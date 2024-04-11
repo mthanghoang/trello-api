@@ -18,7 +18,10 @@ const createNew = async (reqBody) => {
     //xử lí dữ liệu cho chuẩn với FE
     if (result) {
       result.cards = []
-      await boardModel.pushColumnOrderIds(result)
+      //await
+      boardModel.pushColumnOrderIds(result)
+      //await
+      boardModel.update(result.boardId, { updatedAt: Date.now() })
     }
     return result
   } catch (error) { throw error }
@@ -32,7 +35,9 @@ const update = async (columnId, reqBody) => {
     }
 
     const result = await columnModel.update(columnId, dataToUpdate)
-
+    if (result) {
+      boardModel.update(result.boardId, { updatedAt: Date.now() })
+    }
     return result
   } catch (error) { throw error }
 }
