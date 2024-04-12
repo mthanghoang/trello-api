@@ -46,7 +46,24 @@ const update = async (req, res, next) => {
   }
 }
 
+const deleteCol = async (req, res, next) => {
+  const correctCondition = Joi.object({
+    id: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('ColumnId fails to match the Object Id pattern!')
+  })
+
+  try {
+    console.log(req.params)
+    await correctCondition.validateAsync(req.params) // validateAsync phải truyền vào object (req.params là {id:....})
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY,
+      new Error(error).message
+    ))
+  }
+}
+
 export const columnValidation = {
   createNew,
-  update
+  update,
+  deleteCol
 }
