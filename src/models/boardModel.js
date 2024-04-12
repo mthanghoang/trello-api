@@ -53,7 +53,7 @@ const pushColumnOrderIds = async (column) => {
   }
 }
 
-const removeFromColumnOrderIds = async (column) => {
+const pullColumnOrderIds = async (column) => {
   try {
     return await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(column.boardId) },
@@ -139,5 +139,5 @@ export const boardModel = {
   getDetails,
   pushColumnOrderIds,
   update,
-  removeFromColumnOrderIds
+  pullColumnOrderIds
 }
