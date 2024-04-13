@@ -4,8 +4,8 @@ import ApiError from '~/utils/ApiError'
 import { BOARD_TYPES } from '~/utils/constants'
 
 const createNew = async (req, res, next) => {
-  const correctCondition = Joi.object({
-    title: Joi.string().required().min(3).max(50).trim().strict(),
+  const correctPayload = Joi.object({
+    title: Joi.string().required().min(3).max(256).trim().strict(),
     description: Joi.string().required().min(3).max(256).trim().strict(),
     type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE).required()
   })
@@ -13,7 +13,7 @@ const createNew = async (req, res, next) => {
   try {
     // console.log('request body: ', req.body)
 
-    await correctCondition.validateAsync(req.body, { abortEarly: false })
+    await correctPayload.validateAsync(req.body, { abortEarly: false })
 
     next()
 
@@ -24,19 +24,34 @@ const createNew = async (req, res, next) => {
   }
 }
 
+const getDetails = async (req, res, next) => {
+  try {
+    const correctBoardId = Joi.object({
+      id: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('BoardId fails to match the Object Id pattern!')
+    })
+    await correctBoardId.validateAsync(req.params)
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY), new Error(error).message)
+  }
+}
+
 const update = async (req, res, next) => {
-  const correctCondition = Joi.object({
-    title: Joi.string().min(3).max(50).trim().strict(),
+  const correctBoardId = Joi.object({
+    id: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('BoardId fails to match the Object Id pattern!')
+  })
+  const correctPayload = Joi.object({
+    title: Joi.string().min(3).max(256).trim().strict(),
     description: Joi.string().min(3).max(256).trim().strict(),
-    type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE)
-    // columnOrderIds:
+    type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE),
+    columnOrderIds: Joi.array().items(
+      Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('ColumnId fails to match the Object Id pattern!')
+    )
   })
 
   try {
-    await correctCondition.validateAsync(req.body, {
-      abortEarly: false,
-      allowUnknown: true //cho phép đẩy lên các field chưa biết (vd trong case này là columnOrderIds)
-    })
+    await correctBoardId.validateAsync(req.params)
+    await correctPayload.validateAsync(req.body, { abortEarly: false })
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY,
@@ -46,7 +61,7 @@ const update = async (req, res, next) => {
 }
 
 const moveCardToDifferentColumn = async (req, res, next) => {
-  const correctCondition = Joi.object({
+  const correctPayload = Joi.object({
     activeCardId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('Active CardId fails to match the Object Id pattern!'),
 
     activeColumnId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('Active ColumnId fails to match the Object Id pattern!'),
@@ -63,7 +78,7 @@ const moveCardToDifferentColumn = async (req, res, next) => {
   })
 
   try {
-    await correctCondition.validateAsync(req.body, { abortEarly: false })
+    await correctPayload.validateAsync(req.body, { abortEarly: false })
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY,
@@ -73,6 +88,7 @@ const moveCardToDifferentColumn = async (req, res, next) => {
 }
 
 export const boardValidation = {
+  getDetails,
   createNew,
   update,
   moveCardToDifferentColumn

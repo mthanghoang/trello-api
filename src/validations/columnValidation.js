@@ -5,7 +5,7 @@ import ApiError from '~/utils/ApiError'
 const createNew = async (req, res, next) => {
   const correctCondition = Joi.object({
     boardId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('BoardId fails to match the Object Id pattern!'),
-    title: Joi.string().required().min(3).max(50).trim().strict()
+    title: Joi.string().required().min(3).max(256).trim().strict()
   })
 
   try {
@@ -27,7 +27,7 @@ const update = async (req, res, next) => {
   const correctCondition = Joi.object({
     // Nếu làm thêm tính năng chuyển column sang board khác thì mới validate boardId
     // boardId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('BoardId fails to match the Object Id pattern!'),
-    title: Joi.string().min(3).max(50).trim().strict(),
+    title: Joi.string().min(3).max(256).trim().strict(),
     cardOrderIds: Joi.array().items(
       Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('CardId fails to match the Object Id pattern!')
     ).default([])

@@ -6,7 +6,7 @@ const createNew = async (req, res, next) => {
   const correctCondition = Joi.object({
     boardId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('BoardId fails to match the Object Id pattern!'),
     columnId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('ColumnId fails to match the Object Id pattern!'),
-    title: Joi.string().required().min(3).max(50).trim().strict()
+    title: Joi.string().required().min(3).max(256).trim().strict()
   })
 
   try {
