@@ -8,4 +8,5 @@ Router.route('/')
 
 Router.route('/:id')
   .delete(cardValidation.deleteCard, cardController.deleteCard)
+  .put(cardValidation.update, cardController.update)
 export const cardRoute = Router

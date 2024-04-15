@@ -51,7 +51,24 @@ const deleteCard = async (cardId) => {
   } catch (error) { throw error }
 }
 
+const update = async (cardId, reqBody) => {
+  try {
+    const dataToUpdate = {
+      ...reqBody,
+      updatedAt: Date.now()
+    }
+
+    const result = await cardModel.update(cardId, dataToUpdate)
+    if (result) {
+      columnModel.update(result.columnId, { updatedAt: Date.now() })
+      boardModel.update(result.boardId, { updatedAt: Date.now() })
+    }
+    return result
+  } catch (error) { throw error }
+}
+
 export const cardService = {
   createNew,
-  deleteCard
+  deleteCard,
+  update
 }

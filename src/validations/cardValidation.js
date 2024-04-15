@@ -32,7 +32,22 @@ const deleteCard = async (req, res, next) => {
   }
 }
 
+const update = async (req, res, next) => {
+  const correctId = Joi.object({
+    id: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).message('CardId fails to match the Object Id pattern!')
+  })
+  try {
+    await correctId.validateAsync(req.params, { abortEarly: false })
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY,
+      new Error(error).message
+    ))
+  }
+}
+
 export const cardValidation = {
   createNew,
-  deleteCard
+  deleteCard,
+  update
 }
