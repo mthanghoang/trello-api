@@ -14,6 +14,21 @@ const createNew = async(req, res, next) => {
   }
 }
 
+const deleteCard = async (req, res, next) => {
+  try {
+    const cardId = req.params.id
+
+    const result = await cardService.deleteCard(cardId)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+    // res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    //   errors: error.message
+    // })
+  }
+}
+
 export const cardController = {
-  createNew
+  createNew,
+  deleteCard
 }
