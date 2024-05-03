@@ -22,18 +22,30 @@ const START_SERVER = () => {
   // Middleware error handling
   app.use(errorHandlingMiddleware)
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(`Hi ${env.AUTHOR}, server running in ${ env.BUILD_MODE } mode at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
-  })
-
-  exitHook(() => { // windows ko duoc, mac duoc (windows ko bat duoc kieu thoat Ctrl+C)
-    // console.log(`Exiting with signal: ${signal}`)
-    console.log('Disconnecting from MongoDB Cloud Atlas')
-    CLOSE_DB()
-    console.log('Disconnected from MongoDB Cloud Atlas')
-  })
+  if (env.BUILD_MODE === 'production') {
+    // MÔI TRƯỜNG PRODUCTION
+    app.listen(process.env.PORT, () => {
+      console.log(`Hi ${env.AUTHOR}, server running in ${ env.BUILD_MODE } mode at port ${ process.env.PORT }/`)
+    })
+    exitHook(() => { // windows ko duoc, mac duoc (windows ko bat duoc kieu thoat Ctrl+C)
+      // console.log(`Exiting with signal: ${signal}`)
+      console.log('Disconnecting from MongoDB Cloud Atlas')
+      CLOSE_DB()
+      console.log('Disconnected from MongoDB Cloud Atlas')
+    })
+  } else {
+    // MÔI TRƯỜNG LOCAL DEV
+    app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+      console.log(`Hi ${env.AUTHOR}, server running in ${ env.BUILD_MODE } mode at http://${ env.LOCAL_DEV_APP_HOST }:${ env.LOCAL_DEV_APP_PORT }/`)
+    })
+    exitHook(() => { // windows ko duoc, mac duoc (windows ko bat duoc kieu thoat Ctrl+C)
+      // console.log(`Exiting with signal: ${signal}`)
+      console.log('Disconnecting from MongoDB Cloud Atlas')
+      CLOSE_DB()
+      console.log('Disconnected from MongoDB Cloud Atlas')
+    })
+  }
 }
-
 // Chỉ khi kết nối đến db thành công mới start con server lên
 CONNECT_DB()
   .then(() => console.log('Connected to MongoDB'))
