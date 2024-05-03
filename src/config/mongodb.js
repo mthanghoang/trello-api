@@ -1,9 +1,4 @@
 import { env } from './environment'
-
-// const MONGODB_URI = 'mongodb+srv://thanghoang:oE0SCVIS4lV22PQa@cluster0-thanghoang.lvhvqak.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0-ThangHoang'
-
-// const DB_NAME = 'trello-mern-stack'
-
 import { MongoClient, ServerApiVersion } from 'mongodb'
 
 let trelloDBInstance = null
@@ -27,6 +22,5 @@ export const GET_DB = () => {
 }
 
 export const CLOSE_DB = async () => {
-  console.log('code chay vao CLOSE_DB')
   await mongoClientInstance.close()
 }

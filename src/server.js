@@ -11,7 +11,6 @@ import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 const exitHook = require('async-exit-hook')
 const START_SERVER = () => {
   const app = express()
-
   // CORS
   app.use(cors(corsOptions))
   // Enable req.body json data
@@ -24,7 +23,7 @@ const START_SERVER = () => {
   app.use(errorHandlingMiddleware)
 
   app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(`Hi ${env.AUTHOR}, server running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
+    console.log(`Hi ${env.AUTHOR}, server running in ${ env.BUILD_MODE } mode at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
   })
 
   exitHook(() => { // windows ko duoc, mac duoc (windows ko bat duoc kieu thoat Ctrl+C)
