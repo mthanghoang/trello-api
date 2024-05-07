@@ -1,0 +1,11 @@
+stages:
+    - build
+    - deploy
+    - checking
+
+build:
+    stage: build
+    script:
+        - yarn -DskipTests=true
+    tags:
+        - server
