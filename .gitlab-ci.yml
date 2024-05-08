@@ -26,10 +26,10 @@ deploy:
         - sudo mv .env /data/trello-api/
         - sudo chown -R trello-api:trello-api /data/trello-api/
         - sudo chmod -R 750 /data/trello-api/
-        # - >
-        #     if [[ -z "$(ps -ef | grep trello | grep -v grep | awk '{print $2}')" ]]; then
-        #         sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
-        #     fi
+        - >
+            if [[ -n "$(ps -ef | grep trello | grep -v grep | awk '{print $2}')" ]]; then
+                sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
+            fi
         - sudo su trello-api -c "cd /data/trello-api/; node ./src/server.js"
     tags:
         - server
