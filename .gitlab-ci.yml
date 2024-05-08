@@ -9,3 +9,10 @@ build:
         - yarn -DskipTests=true
     tags:
         - server
+    
+deploy:
+    stage: deploy
+    script:
+        - yarn production
+    tags:
+        - server
