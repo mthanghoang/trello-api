@@ -6,7 +6,7 @@ build:
         - yarn -DskipTests=true
         - yarn build
         - sudo mv build/ /data/trello-api/
-        - sudo mv node_modules /data/trello-api/
+        - sudo mv node_modules/ /data/trello-api/
     tags:
         - server
     
