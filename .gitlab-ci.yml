@@ -24,8 +24,8 @@ deploy:
         - echo BUILD_MODE = ${BUILD_MODE} >> .env
     script:
         - sudo mv .env /data/trello-api/
-        - sudo chown -r trello-api:trello-api /data/trello-api/
-        - sudo chmod -r 750 /data/trello-api/
+        - sudo chown -R trello-api:trello-api /data/trello-api/
+        - sudo chmod -R 750 /data/trello-api/
         - sudo su trello-api -c "nohup node ./build/src/server.js 2>&1 &"
     tags:
         - server
