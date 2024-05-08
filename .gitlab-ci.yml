@@ -17,9 +17,10 @@ deploy:
         - echo DATABASE_NAME = ${DATABASE_NAME} >> .env
         - echo AUTHOR = ${AUTHOR} >> .env
         - echo PORT = ${PORT} >> .env
+        - echo BUILD_MODE = ${BUILD_MODE} >> .env
     script:
         - sudo cp -r build/ /data/trello-api/
         - sudo chown -R trello-api:trello-api /data/trello-api/
-        - sudo su trello-api -c "cd /data/trello-api/; cross-env BUILD_MODE=production; nohup node ./build/src/server.js 2>&1 &"
+        - sudo su trello-api -c "cd /data/trello-api/; nohup node ./build/src/server.js 2>&1 &"
     tags:
         - server
