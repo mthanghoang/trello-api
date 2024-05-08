@@ -1,14 +1,10 @@
-stages:
-    - build
-    - deploy
-    - checking
-
 build:
     stage: build
     variables:
         GIT_STRATEGY: clone
     script:
         - yarn -DskipTests=true
+        - yarn build
     tags:
         - server
     
@@ -22,6 +18,8 @@ deploy:
         - echo AUTHOR = ${AUTHOR} >> .env
         - echo PORT = ${PORT} >> .env
     script:
-        - yarn production
+        - sudo cp build/ /data/trello-api/
+        - sudo chown -R trello-api:trello-api /data/trello-api/
+        - sudo su trello-api -c "cd /data/trello-api/; cross-env BUILD_MODE=production; nohup node ./build/src/server.js 2>&1 &"
     tags:
         - server
