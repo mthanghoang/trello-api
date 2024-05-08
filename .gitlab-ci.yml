@@ -1,12 +1,52 @@
 stages:
     - build
     - deploy
-    - checking
+    - log
 
 build:
     stage: build
+    variables:
+        GIT_STRATEGY: clone
     script:
         - yarn -DskipTests=true
+        - yarn build
+        - sudo rm -rf /data/trello-api/
+        - sudo mv build/ /data/trello-api/
+        - sudo mv node_modules/ /data/trello-api/
+    tags:
+        - server
+    
+deploy:
+    stage: deploy
+    variables:
+        GIT_STRATEGY: none
+    when: manual
+    before_script:
+        - echo MONGODB_URI = ${MONGODB_URI} >> .env
+        - echo DATABASE_NAME = ${DATABASE_NAME} >> .env
+        - echo AUTHOR = ${AUTHOR} >> .env
+        - echo PORT = ${PORT} >> .env
+        - echo BUILD_MODE = ${BUILD_MODE} >> .env
+    script:
+        - sudo mv .env /data/trello-api/
+        - sudo chown -R trello-api:trello-api /data/trello-api/
+        - sudo chmod -R 750 /data/trello-api/
+        - >
+            if [[ -n "$(ps -ef | grep trello | grep -v grep | awk '{print $2}')" ]]; then
+                sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
+            fi
+        - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js > nohup.out 2>&1 &"
+    tags:
+        - server
+
+log:
+    stage: log
+    variables:
+        GIT_STRATEGY: none
+    when: manual
+    script:
+        - sleep 20
+        - sudo su trello-api -c "cat /data/trello-api/nohup.out"
     tags:
         - server
 
