@@ -49,10 +49,3 @@ log:
         - sudo su trello-api -c "cat /data/trello-api/nohup.out"
     tags:
         - server
-
-deploy:
-    stage: deploy
-    script:
-        - yarn production
-    tags:
-        - server
