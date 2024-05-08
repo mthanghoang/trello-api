@@ -5,8 +5,8 @@ build:
     script:
         - yarn -DskipTests=true
         - yarn build
-        - sudo mv -r build /data/trello-api/
-        - sudo mv -r node_modules /data/trello-api/
+        - sudo mv build/ /data/trello-api/
+        - sudo mv node_modules /data/trello-api/
     tags:
         - server
     
