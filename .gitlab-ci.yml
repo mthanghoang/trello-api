@@ -27,7 +27,7 @@ deploy:
         - sudo chown -R trello-api:trello-api /data/trello-api/
         - sudo chmod -R 750 /data/trello-api/
         - >
-            if [-z $(ps -ef | grep trello | grep -v grep | awk '{print $2}')]; then
+            if [[ -z "$(ps -ef | grep trello | grep -v grep | awk '{print $2}')" ]]; then
                 sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
             fi
         - sudo su trello-api -c "nohup node /data/trello-api/src/server.js 2>&1 &"
