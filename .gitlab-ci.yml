@@ -31,6 +31,5 @@ deploy:
                 sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
             fi
         - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js &"
-        - exit
     tags:
         - server
