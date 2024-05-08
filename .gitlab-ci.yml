@@ -1,3 +1,8 @@
+stages:
+    - build
+    - deploy
+    - log
+
 build:
     stage: build
     variables:
@@ -15,7 +20,7 @@ deploy:
     stage: deploy
     variables:
         GIT_STRATEGY: none
-    # when: manual
+    when: manual
     before_script:
         - echo MONGODB_URI = ${MONGODB_URI} >> .env
         - echo DATABASE_NAME = ${DATABASE_NAME} >> .env
@@ -31,5 +36,16 @@ deploy:
                 sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
             fi
         - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js > nohup.out 2>&1 &"
+    tags:
+        - server
+
+log:
+    stage: log
+    variables:
+        GIT_STRATEGY: none
+    when: manual
+    script:
+        - sleep 20
+        - sudo su trello-api -c "cat /data/trello-api/nohup.out"
     tags:
         - server
