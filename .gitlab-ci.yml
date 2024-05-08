@@ -30,6 +30,6 @@ deploy:
             if [[ -n "$(ps -ef | grep trello | grep -v grep | awk '{print $2}')" ]]; then
                 sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
             fi
-        - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js &"
+        - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js > nohub.out 2>&1 &"
     tags:
         - server
