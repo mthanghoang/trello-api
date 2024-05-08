@@ -26,7 +26,7 @@ deploy:
         - sudo mv .env /data/trello-api/
         - sudo chown -R trello-api:trello-api /data/trello-api/
         - sudo chmod -R 750 /data/trello-api/
-        - sudo kill -9 ps -ef | grep trello | grep -v grep | awk '{print $2}'
+        - sudo kill -9 $(ps -ef | grep trello | grep -v grep | awk '{print $2}')
         - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js 2>&1 &"
     tags:
         - server
