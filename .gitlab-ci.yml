@@ -5,6 +5,8 @@ build:
     script:
         - yarn -DskipTests=true
         - yarn build
+        - sudo mv -r build /data/trello-api/
+        - sudo mv -r node_modules /data/trello-api/
     tags:
         - server
     
@@ -20,6 +22,7 @@ deploy:
         - echo PORT = ${PORT} >> .env
         - echo BUILD_MODE = ${BUILD_MODE} >> .env
     script:
+        - sudo chown -r trello-api:trello-api /data/trello-api/
         - sudo su trello-api -c "nohup node ./build/src/server.js 2>&1 &"
     tags:
         - server
