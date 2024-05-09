@@ -52,7 +52,6 @@ const deleteCol = async (req, res, next) => {
   })
 
   try {
-    console.log(req.params)
     await correctCondition.validateAsync(req.params) // validateAsync phải truyền vào object (req.params là {id:....})
     next()
   } catch (error) {
