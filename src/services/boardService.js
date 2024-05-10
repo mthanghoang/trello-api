@@ -50,6 +50,10 @@ const update = async (boardId, reqBody) => {
       updatedAt: Date.now()
     }
 
+    if (reqBody.title) {
+      dataToUpdate.slug = slugify(reqBody.title)
+    }
+
     const result = await boardModel.update(boardId, dataToUpdate)
 
     return result
