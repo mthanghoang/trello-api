@@ -25,6 +25,14 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
 // Chỉ định những Fields ko cho phép cập nhật
 const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
 
+const getListBoards = async () => {
+  try {
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).find({ _destroyed: false }).toArray()
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 const validateBeforeCreate = async (data) => {
   return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
@@ -134,6 +142,7 @@ const update = async (boardId, dataToUpdate) => {
 export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
+  getListBoards,
   createNew,
   findOneById,
   getDetails,

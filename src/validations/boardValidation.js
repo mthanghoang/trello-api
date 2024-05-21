@@ -3,6 +3,10 @@ import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 import { BOARD_TYPES } from '~/utils/constants'
 
+const getListBoards = async (req, res, next) => {
+  next()
+}
+
 const createNew = async (req, res, next) => {
   const correctPayload = Joi.object({
     title: Joi.string().required().min(3).max(256).trim().strict(),
@@ -88,6 +92,7 @@ const moveCardToDifferentColumn = async (req, res, next) => {
 }
 
 export const boardValidation = {
+  getListBoards,
   getDetails,
   createNew,
   update,

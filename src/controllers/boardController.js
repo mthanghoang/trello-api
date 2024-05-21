@@ -1,6 +1,10 @@
 import { StatusCodes } from 'http-status-codes'
 import { boardService } from '~/services/boardService'
-// import ApiError from '~/utils/ApiError'
+
+const getListBoards = async(req, res) => {
+  const listBoards = await boardService.getListBoards()
+  res.status(StatusCodes.OK).json(listBoards)
+}
 
 const createNew = async(req, res, next) => {
   try {
@@ -63,6 +67,7 @@ const moveCardToDifferentColumn = async (req, res, next) => {
 }
 
 export const boardController = {
+  getListBoards,
   createNew,
   getDetails,
   update,

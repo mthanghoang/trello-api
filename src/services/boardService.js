@@ -7,6 +7,13 @@ import { cloneDeep } from 'lodash'
 import { columnModel } from '~/models/columnModel'
 import { cardModel } from '~/models/cardModel'
 
+const getListBoards = async () => {
+  try {
+    const listBoards = await boardModel.getListBoards()
+    return listBoards
+  } catch (error) { throw error }
+}
+
 const createNew = async (reqBody) => {
   try {
     const data = {
@@ -94,6 +101,7 @@ const moveCardToDifferentColumn = async (reqBody) => {
 }
 
 export const boardService = {
+  getListBoards,
   createNew,
   getDetails,
   update,
