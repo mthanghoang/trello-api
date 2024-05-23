@@ -6,5 +6,6 @@ export const env = {
   LOCAL_DEV_APP_HOST: process.env.LOCAL_DEV_APP_HOST,
   LOCAL_DEV_APP_PORT: process.env.LOCAL_DEV_APP_PORT,
   AUTHOR: process.env.AUTHOR,
-  BUILD_MODE: process.env.BUILD_MODE
+  BUILD_MODE: process.env.BUILD_MODE,
+  SECRET_KEY: process.env.SECRET_KEY
 }
