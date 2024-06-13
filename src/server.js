@@ -25,7 +25,7 @@ const START_SERVER = () => {
   if (env.BUILD_MODE === 'production') {
     // MÔI TRƯỜNG PRODUCTION
     app.listen(process.env.PORT, () => {
-      console.log(`Hi ${env.AUTHOR}, server running in ${ env.BUILD_MODE } mode at port ${ process.env.PORT }/`)
+      console.log(`Hi ${env.AUTHOR}, server running in ${ env.BUILD_MODE } mode at port ${ process.env.PORT }`)
     })
     exitHook(() => { // windows ko duoc, mac duoc (windows ko bat duoc kieu thoat Ctrl+C)
       // console.log(`Exiting with signal: ${signal}`)
