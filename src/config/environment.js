@@ -7,5 +7,6 @@ export const env = {
   LOCAL_DEV_APP_PORT: process.env.LOCAL_DEV_APP_PORT,
   AUTHOR: process.env.AUTHOR,
   BUILD_MODE: process.env.BUILD_MODE,
-  SECRET_KEY: process.env.SECRET_KEY
+  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET
 }

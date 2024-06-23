@@ -4,8 +4,6 @@ import { GET_DB } from '~/config/mongodb'
 import bcrypt from 'bcrypt'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
-import e from 'express'
-
 
 // Define Collection (Name & Schema)
 const USER_COLLECTION_NAME = 'users'
@@ -44,11 +42,11 @@ const loginUser = async (data) => {
       username: data.username
     })
     if (!user) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Access denied')
+      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Incorrect username and / or password.')
     }
     const isValid = await bcrypt.compare(data.password, user.password)
     if (!isValid) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Access denied')
+      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Incorrect username and / or password.')
     }
     return { username: user.username }
   } catch (error) {

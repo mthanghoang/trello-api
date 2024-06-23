@@ -1,7 +1,9 @@
 import { userService } from '~/services/userService'
 import bcrypt from 'bcrypt'
+import ms from 'ms'
 import { StatusCodes } from 'http-status-codes'
 import { generateToken } from '~/utils/generateToken'
+import { env } from '~/config/environment'
 
 //signup user
 const signupUser = async (req, res, next) => {
@@ -22,8 +24,33 @@ const loginUser = async (req, res, next) => {
     const username = req.body.username
     const password = req.body.password
     const user = await userService.loginUser({ username, password })
-    const token = generateToken(user)
-    res.status(StatusCodes.OK).json({ token })
+    const accessToken = await generateToken(
+      user,
+      env.ACCESS_TOKEN_SECRET,
+      '1h')
+    const refreshToken = await generateToken(
+      user,
+      env.REFRESH_TOKEN_SECRET,
+      // refresh token expires in 7 days (longer than access token)
+      '14d')
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: ms('14 days')
+    })
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: ms('14 days')
+    })
+
+    //Trả về access token, refresh token và thông tin user
+    res.status(StatusCodes.OK).json({
+      ...user,
+      accessToken,
+      refreshToken })
   } catch (error) {
     next(error)
   }
