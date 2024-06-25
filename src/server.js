@@ -7,6 +7,7 @@ import { CLOSE_DB } from './config/mongodb'
 import { env } from './config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
+import cookieParser from 'cookie-parser'
 
 const exitHook = require('async-exit-hook')
 const START_SERVER = () => {
@@ -15,6 +16,8 @@ const START_SERVER = () => {
   app.use(cors(corsOptions))
   // Enable req.body json data
   app.use(express.json())
+  // Use cookie parser
+  app.use(cookieParser())
 
   // Use APIs v1
   app.use('/v1', APIs_V1)

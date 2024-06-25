@@ -25,9 +25,9 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
 // Chỉ định những Fields ko cho phép cập nhật
 const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
 
-const getListBoards = async () => {
+const getListBoards = async (userInfo) => {
   try {
-    return await GET_DB().collection(BOARD_COLLECTION_NAME).find({ _destroyed: false }).toArray()
+    return await GET_DB().collection(BOARD_COLLECTION_NAME).find({ _destroyed: false, owner: userInfo.username }).toArray()
   } catch (error) {
     throw new Error(error)
   }

@@ -7,9 +7,9 @@ import { cloneDeep } from 'lodash'
 import { columnModel } from '~/models/columnModel'
 import { cardModel } from '~/models/cardModel'
 
-const getListBoards = async () => {
+const getListBoards = async (userInfo) => {
   try {
-    const listBoards = await boardModel.getListBoards()
+    const listBoards = await boardModel.getListBoards(userInfo)
     return listBoards
   } catch (error) { throw error }
 }

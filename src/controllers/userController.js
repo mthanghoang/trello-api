@@ -27,7 +27,9 @@ const loginUser = async (req, res, next) => {
     const accessToken = await generateToken(
       user,
       env.ACCESS_TOKEN_SECRET,
-      '1h')
+      // '5s' // access token expires in 5 seconds
+      '1h'
+    )
     const refreshToken = await generateToken(
       user,
       env.REFRESH_TOKEN_SECRET,

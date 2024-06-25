@@ -2,7 +2,8 @@ import { StatusCodes } from 'http-status-codes'
 import { boardService } from '~/services/boardService'
 
 const getListBoards = async(req, res) => {
-  const listBoards = await boardService.getListBoards()
+  const userInfo = { username: req.jwtDecoded.username }
+  const listBoards = await boardService.getListBoards(userInfo)
   res.status(StatusCodes.OK).json(listBoards)
 }
 
