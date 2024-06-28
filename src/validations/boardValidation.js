@@ -63,6 +63,9 @@ const update = async (req, res, next) => {
 }
 
 const moveCardToDifferentColumn = async (req, res, next) => {
+  const correctBoardId = Joi.object({
+    id: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('BoardId fails to match the Object Id pattern!')
+  })
   const correctPayload = Joi.object({
     activeCardId: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/).message('Active CardId fails to match the Object Id pattern!'),
 
@@ -80,6 +83,7 @@ const moveCardToDifferentColumn = async (req, res, next) => {
   })
 
   try {
+    await correctBoardId.validateAsync(req.params)
     await correctPayload.validateAsync(req.body, { abortEarly: false })
     next()
   } catch (error) {

@@ -50,9 +50,18 @@ const loginUser = async (req, res, next) => {
 
     //Trả về access token, refresh token và thông tin user
     res.status(StatusCodes.OK).json({
-      ...user,
-      accessToken,
-      refreshToken })
+      ...user })
+  } catch (error) {
+    next(error)
+  }
+}
+
+const logoutUser = async (req, res, next) => {
+  try {
+    // Clear cookies
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
+    res.status(StatusCodes.OK).json({ message: 'Logout API success' })
   } catch (error) {
     next(error)
   }
@@ -60,5 +69,6 @@ const loginUser = async (req, res, next) => {
 
 export const userController = {
   loginUser,
-  signupUser
+  signupUser,
+  logoutUser
 }

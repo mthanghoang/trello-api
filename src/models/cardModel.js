@@ -13,7 +13,8 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
 
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
-  _destroyed: Joi.boolean().default(false)
+  _destroyed: Joi.boolean().default(false),
+  owner: Joi.string().required().trim().strict()
 })
 
 const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
@@ -42,6 +43,7 @@ const createNew = async (data) => {
       boardId: new ObjectId(validData.boardId),
       columnId: new ObjectId(validData.columnId)
     })
+    // insertOne insert xong trả ra { acknowledge: true, insertedId: ...}
   } catch (error) {
     throw new Error(error)
   }

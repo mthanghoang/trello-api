@@ -14,10 +14,11 @@ const getListBoards = async (userInfo) => {
   } catch (error) { throw error }
 }
 
-const createNew = async (reqBody) => {
+const createNew = async (reqBody, userInfo) => {
   try {
     const data = {
       ...reqBody,
+      owner: userInfo.username,
       slug: slugify(reqBody.title)
     }
 
@@ -31,11 +32,14 @@ const createNew = async (reqBody) => {
   } catch (error) { throw error }
 }
 
-const getDetails = async (boardId) => {
+const getDetails = async (boardId, userInfo) => {
   try {
     const board = await boardModel.getDetails(boardId)
     if (!board) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+    }
+    if (board.owner !== userInfo.username) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
     }
 
     const result = cloneDeep(board)
@@ -50,8 +54,17 @@ const getDetails = async (boardId) => {
   } catch (error) { throw error }
 }
 
-const update = async (boardId, reqBody) => {
+const update = async (boardId, reqBody, userInfo) => {
   try {
+    const board = await boardModel.findOneById(boardId)
+    if (!board) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+    }
+
+    if (board.owner !== userInfo.username) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    }
+
     const dataToUpdate = {
       ...reqBody,
       updatedAt: Date.now()
@@ -61,38 +74,50 @@ const update = async (boardId, reqBody) => {
       dataToUpdate.slug = slugify(reqBody.title)
     }
 
-    const result = await boardModel.update(boardId, dataToUpdate)
+    const updatedBoard = await boardModel.update(boardId, dataToUpdate)
 
-    return result
+    return updatedBoard
   } catch (error) { throw error }
 }
 
-const moveCardToDifferentColumn = async (reqBody) => {
+const moveCardToDifferentColumn = async (reqBody, userInfo) => {
   try {
     /**
-     * B1: Update cardOrderIds array of active column
-     * B2: Update cardOrderIds array of over column
-     * B3: Update columnId field of active (dragged) card
-     * B4: Update updatedAt field of board
+     * B1: Check if the user is authorized to modify the board (the owner of the board)
+     * B2: Update cardOrderIds array of active column
+     * B3: Update cardOrderIds array of over column
+     * B4: Update columnId field of active (dragged) card
+     * B5: Update updatedAt field of board
      */
+
     //B1
+    // const boardId = (await columnModel.findOneById(reqBody.activeColumnId)).boardId
+    // const board = await boardModel.findOneById(boardId)
+    // if (board.owner !== userInfo.username) {
+    //   throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    // }
+    const movedColumn = await columnModel.findOneById(reqBody.activeColumnId)
+    if (movedColumn.owner !== userInfo.username) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    }
+    //B2
     columnModel.update(reqBody.activeColumnId, {
       cardOrderIds: reqBody.activeCardOrderIds,
       updatedAt: Date.now()
     })
-    //B2
+    //B3
     columnModel.update(reqBody.overColumnId, {
       cardOrderIds: reqBody.overCardOrderIds,
       updatedAt: Date.now()
     })
-    //B3:
+    //B4:
     cardModel.update(reqBody.activeCardId, {
       columnId: reqBody.overColumnId,
       updatedAt: Date.now()
     })
-    //B4:
+    //B5:
     boardModel.update(
-      await cardModel.findOneById(reqBody.activeCardId).boardId,
+      reqBody.boardId,
       { updatedAt: Date.now() }
     )
 

@@ -5,61 +5,82 @@ import { cardModel } from '~/models/cardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
 
-const createNew = async (reqBody) => {
+const createNew = async (reqBody, userInfo) => {
   try {
     const data = {
-      ...reqBody
+      ...reqBody,
+      owner: userInfo.username
     }
-
+    // const board = await boardModel.findOneById(data.boardId)
+    // if (userInfo.username !== board.owner) {
+    //   throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    // }
     // Gọi tới tầng model để xử lý lưu bản ghi newcolumn vào DB
-    const createdColumn = await columnModel.createNew(data)
-    // console.log(createdcolumn)
+    const result = await columnModel.createNew(data)
 
-    // Trả về bản ghi mới cho phía client
-    const result = await columnModel.findOneById(createdColumn.insertedId)
+    // Trả về column mới cho phía client
+    const createdColumn = await columnModel.findOneById(result.insertedId)
 
     //xử lí dữ liệu cho chuẩn với FE
-    if (result) {
-      result.cards = []
+    if (createdColumn) {
+      createdColumn.cards = []
       //await
-      boardModel.pushColumnOrderIds(result)
+      boardModel.pushColumnOrderIds(createdColumn)
       //await
-      boardModel.update(result.boardId, { updatedAt: Date.now() })
+      boardModel.update(createdColumn.boardId, { updatedAt: Date.now() })
     }
-    return result
+    return createdColumn
   } catch (error) { throw error }
 }
 
-const update = async (columnId, reqBody) => {
+const update = async (columnId, reqBody, userInfo) => {
   try {
+    const columnToUpdate = await columnModel.findOneById(columnId)
+    if (!columnToUpdate) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Column not found')
+    }
+    // const board = await boardModel.findOneById(columnToUpdate.boardId)
+    // if (userInfo.username !== board.owner) {
+    //   throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    // }
+    if (userInfo.username !== columnToUpdate.owner) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    }
+
     const dataToUpdate = {
       ...reqBody,
       updatedAt: Date.now()
     }
 
-    const result = await columnModel.update(columnId, dataToUpdate)
-    if (result) {
-      boardModel.update(result.boardId, { updatedAt: Date.now() })
-    }
-    return result
+    const updatedColumn = await columnModel.update(columnId, dataToUpdate)
+    boardModel.update(updatedColumn.boardId, { updatedAt: Date.now() })
+    return updatedColumn
   } catch (error) { throw error }
 }
 
-const deleteCol = async (columnId) => {
+const deleteCol = async (columnId, userInfo) => {
   try {
     const columnToDelete = await columnModel.findOneById(columnId)
     if (!columnToDelete) {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Column not found')
     }
+
+    // const board = await boardModel.findOneById(columnToDelete.boardId)
+    // if (userInfo.username !== board.owner) {
+    //   throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    // }
+    if (userInfo.username !== columnToDelete.owner) {
+      throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+    }
     // Xóa card(s) trong column
-    await cardModel.deleteManyByColumnId(columnId)
+    cardModel.deleteManyByColumnId(columnId)
     // Xóa column
-    await columnModel.deleteOneById(columnId)
+    columnModel.deleteOneById(columnId)
     // Update columnOrderIds array for board
-    await boardModel.pullColumnOrderIds(columnToDelete)
+    boardModel.pullColumnOrderIds(columnToDelete)
 
     // Update updatedAt field for board
-    await boardModel.update(columnToDelete.boardId, {
+    boardModel.update(columnToDelete.boardId, {
       updatedAt: Date.now()
     })
 

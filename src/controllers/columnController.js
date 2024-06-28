@@ -4,8 +4,9 @@ import { columnService } from '~/services/columnService'
 
 const createNew = async(req, res, next) => {
   try {
+    const userInfo = { ...req.jwtDecoded }
     // Navigate to service layer
-    const result = await columnService.createNew(req.body)
+    const result = await columnService.createNew(req.body, userInfo)
 
     // có kết quả thì trả về phái client
     res.status(StatusCodes.CREATED).json(result)
@@ -16,9 +17,10 @@ const createNew = async(req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
+    const userInfo = { ...req.jwtDecoded }
     const columnId = req.params.id
 
-    const updatedColumn = await columnService.update(columnId, req.body)
+    const updatedColumn = await columnService.update(columnId, req.body, userInfo)
     res.status(StatusCodes.OK).json(updatedColumn)
   } catch (error) {
     next(error)
@@ -32,7 +34,9 @@ const deleteCol = async (req, res, next) => {
   try {
     const columnId = req.params.id
 
-    const result = await columnService.deleteCol(columnId)
+    const userInfo = { ...req.jwtDecoded }
+
+    const result = await columnService.deleteCol(columnId, userInfo)
     res.status(StatusCodes.OK).json(result)
   } catch (error) {
     next(error)

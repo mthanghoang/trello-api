@@ -19,11 +19,12 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
 
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
-  _destroyed: Joi.boolean().default(false)
+  _destroyed: Joi.boolean().default(false),
+  owner: Joi.string().required().trim().strict()
 })
 
 // Chỉ định những Fields ko cho phép cập nhật
-const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt', 'owner']
 
 const getListBoards = async (userInfo) => {
   try {

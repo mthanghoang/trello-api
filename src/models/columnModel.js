@@ -15,7 +15,8 @@ const COLUMN_COLLECTION_SCHEMA = Joi.object({
 
   createdAt: Joi.date().timestamp('javascript').default(Date.now),
   updatedAt: Joi.date().timestamp('javascript').default(null),
-  _destroyed: Joi.boolean().default(false)
+  _destroyed: Joi.boolean().default(false),
+  owner: Joi.string().required().trim().strict()
 })
 
 // Chỉ định những Fields ko cho phép cập nhật
@@ -54,7 +55,7 @@ const createNew = async (data) => {
     const validData = await validateBeforeCreate(data)
     return await GET_DB().collection(COLUMN_COLLECTION_NAME).insertOne({
       ...validData,
-      boardId: new ObjectId(validData.boardId)
+      boardId: new ObjectId(validData.boardId) // Convert boardId string to ObjectId
     })
     // insertOne insert xong trả ra { acknowledge: true, insertedId: ...}
   } catch (error) {

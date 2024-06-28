@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { verifyToken } from '~/utils/generateToken'
 import { env } from '~/config/environment'
 
-const isAuthorized = async (req, res, next) => {
+const isAuthenticated = async (req, res, next) => {
   // Solution 1: Get token from request cookies
   const accessTokenCookie = req.cookies?.accessToken
 
@@ -18,6 +18,7 @@ const isAuthorized = async (req, res, next) => {
   //   res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Unauthorized (Token not found' })
   //   return
   // }
+  console.log('authentication middleware')
 
   try {
     // Verify token
@@ -42,5 +43,5 @@ const isAuthorized = async (req, res, next) => {
 }
 
 export const authMiddleware = {
-  isAuthorized
+  isAuthenticated
 }
