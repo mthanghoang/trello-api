@@ -15,3 +15,7 @@ Router.route('/signup')
 Router.route('/logout')
   .delete(userController.logoutUser)
 export const userRoute = Router
+
+// refresh token
+Router.route('/refresh-token')
+  .put(userController.refreshToken)

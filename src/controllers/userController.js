@@ -2,8 +2,10 @@ import { userService } from '~/services/userService'
 import bcrypt from 'bcrypt'
 import ms from 'ms'
 import { StatusCodes } from 'http-status-codes'
-import { generateToken } from '~/utils/generateToken'
+import { generateToken } from '~/utils/jwtProvider'
 import { env } from '~/config/environment'
+import { verifyToken } from '~/utils/jwtProvider'
+import ApiError from '~/utils/ApiError'
 
 //signup user
 const signupUser = async (req, res, next) => {
@@ -28,13 +30,16 @@ const loginUser = async (req, res, next) => {
       user,
       env.ACCESS_TOKEN_SECRET,
       // '5s' // access token expires in 5 seconds
-      '1h'
+      '5m'
+      // '1h'
     )
     const refreshToken = await generateToken(
       user,
       env.REFRESH_TOKEN_SECRET,
       // refresh token expires in 7 days (longer than access token)
-      '14d')
+      '14d'
+      // '15s'
+    )
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,
@@ -67,8 +72,43 @@ const logoutUser = async (req, res, next) => {
   }
 }
 
+const refreshToken = async (req, res, next) => {
+  try {
+    // Solution 1: Get refresh token from request cookies
+    const refreshToken = req.cookies?.refreshToken
+
+    // Solution 2: Get refresh token from request body (FE sends refresh token in request body)
+    // const refreshToken = req.body?.refreshToken
+
+    // Verify refresh token
+    const decoded = await verifyToken(refreshToken, env.REFRESH_TOKEN_SECRET)
+    const user = { username: decoded.username }
+    const accessToken = await generateToken(
+      user,
+      env.ACCESS_TOKEN_SECRET,
+      // '5s' // access token expires in 5 seconds
+      '5m'
+    )
+
+    // Set access token to cookies
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: ms('14 days')
+    })
+
+    // Return response
+    res.status(StatusCodes.OK).json({ accessToken: accessToken })
+
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNAUTHORIZED, 'Refresh token expired / invalid'))
+  }
+}
+
 export const userController = {
   loginUser,
   signupUser,
-  logoutUser
+  logoutUser,
+  refreshToken
 }

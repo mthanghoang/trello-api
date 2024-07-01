@@ -39,7 +39,7 @@ const getDetails = async (boardId, userInfo) => {
       throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
     }
     if (board.owner !== userInfo.username) {
-      throw new ApiError(StatusCodes.FORBIDDEN, 'User is unauthorized')
+      throw new ApiError(StatusCodes.FORBIDDEN, 'Board is private')
     }
 
     const result = cloneDeep(board)
