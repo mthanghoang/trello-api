@@ -8,13 +8,13 @@ build:
     variables:
         GIT_STRATEGY: clone
     script:
-        - yarn -DskipTests=true
-        - yarn build
+        - npm install -DskipTests=true
+        - npm run build
         - sudo rm -rf /data/trello-api/
         - sudo mv build/ /data/trello-api/
         - sudo mv node_modules/ /data/trello-api/
     tags:
-        - server
+        - dev-server
     
 deploy:
     stage: deploy
@@ -22,10 +22,14 @@ deploy:
         GIT_STRATEGY: none
     when: manual
     before_script:
+        - echo ${MONGODB_URI}
         - echo MONGODB_URI = ${MONGODB_URI} >> .env
         - echo DATABASE_NAME = ${DATABASE_NAME} >> .env
         - echo AUTHOR = ${AUTHOR} >> .env
         - echo PORT = ${PORT} >> .env
+        # - echo LOCAL_DEV_APP_HOST = ${LOCAL_DEV_APP_HOST} >> .env
+        - echo ACCESS_TOKEN_SECRET = ${ACCESS_TOKEN_SECRET} >> .env
+        - echo REFRESH_TOKEN_SECRET = ${REFRESH_TOKEN_SECRET} >> .env
         - echo BUILD_MODE = ${BUILD_MODE} >> .env
     script:
         - sudo mv .env /data/trello-api/
@@ -37,7 +41,7 @@ deploy:
             fi
         - sudo su trello-api -c "cd /data/trello-api/; nohup node ./src/server.js > nohup.out 2>&1 &"
     tags:
-        - server
+        - dev-server
 
 log:
     stage: log
@@ -48,4 +52,4 @@ log:
         - sleep 20
         - sudo su trello-api -c "cat /data/trello-api/nohup.out"
     tags:
-        - server
+        - dev-server
